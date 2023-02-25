@@ -2,6 +2,7 @@ import requests
 from webcolors import CSS3_HEX_TO_NAMES
 import dotenv
 import os
+import math
 
 dotenv.load_dotenv()
 
@@ -19,6 +20,7 @@ shadows = []
 blue_colors = []
 red_colors = []
 green_colors = []
+gray_colors = []
 
 
 def create_colors_list(colors_set):
@@ -26,12 +28,28 @@ def create_colors_list(colors_set):
         dict_without_alpha = color.copy()
         dict_without_alpha.pop("a")
         dominated_hue = max(dict_without_alpha, key=dict_without_alpha.get)
+
         if dominated_hue == "g":
-            green_colors.append(color)
+            if abs(color[dominated_hue] - color.get("b")) < 30 and abs(
+                color[dominated_hue] - color.get("r") < 30
+            ):
+                gray_colors.append(color)
+            else:
+                green_colors.append(color)
         elif dominated_hue == "b":
-            blue_colors.append(color)
+            if abs(color[dominated_hue] - color.get("g")) < 30 and abs(
+                color[dominated_hue] - color.get("r") < 30
+            ):
+                gray_colors.append(color)
+            else:
+                blue_colors.append(color)
         else:
-            red_colors.append(color)
+            if abs(color[dominated_hue] - color.get("g")) < 30 and abs(
+                color[dominated_hue] - color.get("b") < 30
+            ):
+                gray_colors.append(color)
+            else:
+                red_colors.append(color)
 
     # check if color hue is the biggest from dict (r, g, b), save color to one of list (reds_colors, green_colors, blues_colors), create separate clr css variables and append to root
 
@@ -95,7 +113,22 @@ with open("root.scss", mode="w") as file:
 
     blue_clr = [
         f"--clr-blue-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-        for index, clr in enumerate(blue_colors)
+        for index, clr in enumerate(sorted(blue_colors, key=lambda k: k["b"]))
+    ]
+
+    green_clr = [
+        f"--clr-green-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
+        for index, clr in enumerate(sorted(green_colors, key=lambda k: k["g"]))
+    ]
+
+    red_clr = [
+        f"--clr-red-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
+        for index, clr in enumerate(sorted(red_colors, key=lambda k: k["r"]))
+    ]
+
+    gray_clr = [
+        f"--clr-gray-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
+        for index, clr in enumerate(gray_colors)
     ]
 
     fw = [f"--font-weight-{w}: {w}; \n" for w in sorted(font_weights)]
@@ -119,7 +152,18 @@ with open("root.scss", mode="w") as file:
     file.write("// Font Sizes \n\n")
     file.writelines(fs)
     file.write("\n")
+    file.write("//Colors \n")
+    file.write("//Blue \n")
     file.writelines(blue_clr)
+    file.write("\n")
+    file.write("//Gray \n")
+    file.writelines(gray_clr)
+    file.write("\n")
+    file.write("//Red \n")
+    file.writelines(red_clr)
+    file.write("\n")
+    file.write("//Green \n")
+    file.writelines(green_clr)
     file.write("\n")
     file.writelines(ls)
 
