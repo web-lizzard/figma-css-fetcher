@@ -59,9 +59,6 @@ def set_properties(children):
             set_properties(nodes)
 
 
-# https://api.figma.com/v1/files/w4PzT8VxwxmeBsUzZgqxsO/nodes?ids=1825:3149&depth=1
-
-
 try:
     response = requests.get(base_url, headers=headers)
     response.raise_for_status()
