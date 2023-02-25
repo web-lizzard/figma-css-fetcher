@@ -3,6 +3,8 @@ import dotenv
 import os
 import gc
 
+from scraper import Scraper
+
 
 dotenv.load_dotenv()
 
@@ -10,17 +12,17 @@ base_url = f"https://api.figma.com/v1/files/{os.environ.get('FIGMA_FILE_NAME')}/
 
 headers = {"X-Figma-Token": os.environ.get("FIGMA_API_KEY")}
 
-font_families = set()
-font_weights = set()
-font_sizes = set()
-letter_spacing = set()
-colors_set = []
-shadows = []
+# font_families = set()
+# font_weights = set()
+# font_sizes = set()
+# letter_spacing = set()
+# colors_set = []
+# shadows = []
 
-blue_colors = []
-red_colors = []
-green_colors = []
-gray_colors = []
+# blue_colors = []
+# red_colors = []
+# green_colors = []
+# gray_colors = []
 
 
 def fetch_data():
@@ -116,17 +118,18 @@ def set_properties(children):
             set_properties(nodes)
 
 
-main()
-
-
 def create_scss_file():
+    scraper = Scraper()
     with open("root.scss", mode="w") as file:
-        create_colors_list(colors_set=colors_set)
 
         blue_clr = [
             f"--clr-blue-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
             for index, clr in enumerate(
-                sorted(blue_colors, key=lambda color: sum(color.values()), reverse=True)
+                sorted(
+                    scraper.blue_colors,
+                    key=lambda color: sum(color.values()),
+                    reverse=True,
+                )
             )
         ]
 
@@ -134,7 +137,9 @@ def create_scss_file():
             f"--clr-green-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
             for index, clr in enumerate(
                 sorted(
-                    green_colors, key=lambda color: sum(color.values()), reverse=True
+                    scraper.green_colors,
+                    key=lambda color: sum(color.values()),
+                    reverse=True,
                 )
             )
         ]
@@ -142,26 +147,34 @@ def create_scss_file():
         red_clr = [
             f"--clr-red-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
             for index, clr in enumerate(
-                sorted(red_colors, key=lambda color: sum(color.values()), reverse=True)
+                sorted(
+                    scraper.red_colors,
+                    key=lambda color: sum(color.values()),
+                    reverse=True,
+                )
             )
         ]
 
         gray_clr = [
             f"--clr-gray-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
             for index, clr in enumerate(
-                sorted(gray_colors, key=lambda color: sum(color.values()), reverse=True)
+                sorted(
+                    scraper.gray_colors,
+                    key=lambda color: sum(color.values()),
+                    reverse=True,
+                )
             )
         ]
 
-        fw = [f"--font-weight-{w}: {w}; \n" for w in sorted(font_weights)]
-        ff = [f"--font-{f.lower()}: '{f}'; \n" for f in font_families]
+        fw = [f"--font-weight-{w}: {w}; \n" for w in sorted(scraper.font_weights)]
+        ff = [f"--font-{f.lower()}: '{f}'; \n" for f in scraper.font_families]
         ls = [
             f"--letter-spacing-{(index + 1) * 10}: {f}px; \n"
-            for index, f in enumerate(sorted(letter_spacing))
+            for index, f in enumerate(sorted(scraper.letter_spacing))
         ]
         fs = [
             f"--fs-{(index + 1) * 100}: {fs}px; \n"
-            for index, fs in enumerate(sorted(font_sizes))
+            for index, fs in enumerate(sorted(scraper.font_sizes))
         ]
         file.write(":root { \n")
         file.write("// Font Weights \n")
