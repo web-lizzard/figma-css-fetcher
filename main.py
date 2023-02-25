@@ -1,5 +1,4 @@
 import requests
-from webcolors import CSS3_HEX_TO_NAMES
 import dotenv
 import os
 import math
