@@ -1,7 +1,8 @@
 import requests
 import dotenv
 import os
-import math
+import gc
+
 
 dotenv.load_dotenv()
 
@@ -20,6 +21,22 @@ blue_colors = []
 red_colors = []
 green_colors = []
 gray_colors = []
+
+
+def fetch_data():
+    try:
+        response = requests.get(base_url, headers=headers)
+        response.raise_for_status()
+    except requests.HTTPError as error:
+        print(error)
+    else:
+        return response.json()
+
+
+def main():
+    data = fetch_data()
+    children = data["document"]["children"]
+    set_properties(children)
 
 
 def create_colors_list(colors_set):
@@ -99,82 +116,82 @@ def set_properties(children):
             set_properties(nodes)
 
 
-try:
-    response = requests.get(base_url, headers=headers)
-    response.raise_for_status()
-except requests.HTTPError as error:
-    print(error)
-else:
-    data = response.json()
-    children = data["document"]["children"]
-    set_properties(children)
+main()
 
 
-with open("root.scss", mode="w") as file:
-    create_colors_list(colors_set=colors_set)
+def create_scss_file():
+    with open("root.scss", mode="w") as file:
+        create_colors_list(colors_set=colors_set)
 
-    blue_clr = [
-        f"--clr-blue-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-        for index, clr in enumerate(
-            sorted(blue_colors, key=lambda color: sum(color.values()), reverse=True)
-        )
-    ]
+        blue_clr = [
+            f"--clr-blue-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
+            for index, clr in enumerate(
+                sorted(blue_colors, key=lambda color: sum(color.values()), reverse=True)
+            )
+        ]
 
-    green_clr = [
-        f"--clr-green-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-        for index, clr in enumerate(
-            sorted(green_colors, key=lambda color: sum(color.values()), reverse=True)
-        )
-    ]
+        green_clr = [
+            f"--clr-green-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
+            for index, clr in enumerate(
+                sorted(
+                    green_colors, key=lambda color: sum(color.values()), reverse=True
+                )
+            )
+        ]
 
-    red_clr = [
-        f"--clr-red-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-        for index, clr in enumerate(
-            sorted(red_colors, key=lambda color: sum(color.values()), reverse=True)
-        )
-    ]
+        red_clr = [
+            f"--clr-red-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
+            for index, clr in enumerate(
+                sorted(red_colors, key=lambda color: sum(color.values()), reverse=True)
+            )
+        ]
 
-    gray_clr = [
-        f"--clr-gray-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-        for index, clr in enumerate(
-            sorted(gray_colors, key=lambda color: sum(color.values()), reverse=True)
-        )
-    ]
+        gray_clr = [
+            f"--clr-gray-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
+            for index, clr in enumerate(
+                sorted(gray_colors, key=lambda color: sum(color.values()), reverse=True)
+            )
+        ]
 
-    fw = [f"--font-weight-{w}: {w}; \n" for w in sorted(font_weights)]
-    ff = [f"--font-{f.lower()}: '{f}'; \n" for f in font_families]
-    ls = [
-        f"--letter-spacing-{(index + 1) * 10}: {f}px; \n"
-        for index, f in enumerate(sorted(letter_spacing))
-    ]
-    fs = [
-        f"--fs-{(index + 1) * 100}: {fs}px; \n"
-        for index, fs in enumerate(sorted(font_sizes))
-    ]
-    file.write(":root { \n")
-    file.write("// Font Weights \n")
-    file.write("\n")
-    file.writelines(fw)
-    file.write("\n")
-    file.write("// Font Families \n\n")
-    file.writelines(ff)
-    file.write("\n")
-    file.write("// Font Sizes \n\n")
-    file.writelines(fs)
-    file.write("\n")
-    file.write("//Colors \n")
-    file.write("//Blue \n")
-    file.writelines(blue_clr)
-    file.write("\n")
-    file.write("//Gray \n")
-    file.writelines(gray_clr)
-    file.write("\n")
-    file.write("//Red \n")
-    file.writelines(red_clr)
-    file.write("\n")
-    file.write("//Green \n")
-    file.writelines(green_clr)
-    file.write("\n")
-    file.writelines(ls)
+        fw = [f"--font-weight-{w}: {w}; \n" for w in sorted(font_weights)]
+        ff = [f"--font-{f.lower()}: '{f}'; \n" for f in font_families]
+        ls = [
+            f"--letter-spacing-{(index + 1) * 10}: {f}px; \n"
+            for index, f in enumerate(sorted(letter_spacing))
+        ]
+        fs = [
+            f"--fs-{(index + 1) * 100}: {fs}px; \n"
+            for index, fs in enumerate(sorted(font_sizes))
+        ]
+        file.write(":root { \n")
+        file.write("// Font Weights \n")
+        file.write("\n")
+        file.writelines(fw)
+        file.write("\n")
+        file.write("// Font Families \n\n")
+        file.writelines(ff)
+        file.write("\n")
+        file.write("// Font Sizes \n\n")
+        file.writelines(fs)
+        file.write("\n")
+        file.write("//Colors \n")
+        file.write("//Blue \n")
+        file.writelines(blue_clr)
+        file.write("\n")
+        file.write("//Gray \n")
+        file.writelines(gray_clr)
+        file.write("\n")
+        file.write("//Red \n")
+        file.writelines(red_clr)
+        file.write("\n")
+        file.write("//Green \n")
+        file.writelines(green_clr)
+        file.write("\n")
+        file.writelines(ls)
 
-    file.write("}")
+        file.write("}")
+
+
+create_scss_file()
+gc.collect()
+print(len(gc.get_objects()))
