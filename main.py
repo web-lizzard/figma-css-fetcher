@@ -30,22 +30,25 @@ def create_colors_list(colors_set):
         dominated_hue = max(dict_without_alpha, key=dict_without_alpha.get)
 
         if dominated_hue == "g":
-            if abs(color[dominated_hue] - color.get("b")) < 30 and abs(
-                color[dominated_hue] - color.get("r") < 30
+            if abs(color[dominated_hue] - color.get("b")) <= 40 and abs(
+                color[dominated_hue] - color.get("r") <= 40
+                and color[dominated_hue] != 255
             ):
                 gray_colors.append(color)
             else:
                 green_colors.append(color)
         elif dominated_hue == "b":
-            if abs(color[dominated_hue] - color.get("g")) < 30 and abs(
-                color[dominated_hue] - color.get("r") < 30
+            if abs(color[dominated_hue] - color.get("g")) <= 40 and abs(
+                color[dominated_hue] - color.get("r") <= 40
+                and color[dominated_hue] != 255
             ):
                 gray_colors.append(color)
             else:
                 blue_colors.append(color)
         else:
-            if abs(color[dominated_hue] - color.get("g")) < 30 and abs(
-                color[dominated_hue] - color.get("b") < 30
+            if abs(color[dominated_hue] - color.get("g")) <= 40 and abs(
+                color[dominated_hue] - color.get("b") <= 40
+                and color[dominated_hue] != 255
             ):
                 gray_colors.append(color)
             else:
@@ -113,22 +116,30 @@ with open("root.scss", mode="w") as file:
 
     blue_clr = [
         f"--clr-blue-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-        for index, clr in enumerate(sorted(blue_colors, key=lambda k: k["b"]))
+        for index, clr in enumerate(
+            sorted(blue_colors, key=lambda color: sum(color.values()), reverse=True)
+        )
     ]
 
     green_clr = [
         f"--clr-green-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-        for index, clr in enumerate(sorted(green_colors, key=lambda k: k["g"]))
+        for index, clr in enumerate(
+            sorted(green_colors, key=lambda color: sum(color.values()), reverse=True)
+        )
     ]
 
     red_clr = [
         f"--clr-red-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-        for index, clr in enumerate(sorted(red_colors, key=lambda k: k["r"]))
+        for index, clr in enumerate(
+            sorted(red_colors, key=lambda color: sum(color.values()), reverse=True)
+        )
     ]
 
     gray_clr = [
         f"--clr-gray-{(index + 1) * 100}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-        for index, clr in enumerate(gray_colors)
+        for index, clr in enumerate(
+            sorted(gray_colors, key=lambda color: sum(color.values()), reverse=True)
+        )
     ]
 
     fw = [f"--font-weight-{w}: {w}; \n" for w in sorted(font_weights)]
