@@ -1,10 +1,10 @@
 from io import TextIOWrapper
-from scraper import Scraper
+from fetcher import Fetcher
 import re
 
 
 class FileBuilder:
-    def __init__(self, scraper: Scraper):
+    def __init__(self, scraper: Fetcher):
         self.scraper = scraper
         self.colors = []
         self.create_colors()
@@ -25,9 +25,7 @@ class FileBuilder:
             for index, fs in enumerate(sorted(self.scraper.font_sizes))
         ]
 
-        self.build_file()
-
-    def build_file(self):
+    def build_root_file(self):
         with open("root.scss", mode="w") as file:
             self.write_file(file)
 

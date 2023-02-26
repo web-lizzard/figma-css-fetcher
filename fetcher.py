@@ -1,5 +1,4 @@
 from fetch_data import fetch_data
-from scipy.spatial import KDTree
 from webcolors import (
     hex_to_rgb,
 )
@@ -228,7 +227,7 @@ def convert_rgb_to_names(rgb: tuple) -> str:
     return differences[min(differences.keys())]
 
 
-class Scraper:
+class Fetcher:
     def __init__(self):
         self.font_families = set()
         self.font_weights = set()
