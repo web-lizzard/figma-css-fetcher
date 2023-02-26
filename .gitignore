@@ -1,3 +1,5 @@
 .vscode
 root.scss
 .env
+
+__pycache__

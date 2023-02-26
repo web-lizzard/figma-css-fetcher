@@ -1,9 +1,11 @@
-from scraper import Scraper
+from fetcher import Fetcher
 from file_builder import FileBuilder
 import gc
 
 
-FileBuilder(Scraper())
+fb = FileBuilder(Fetcher())
 
+fb.build_root_file()
 
+gc.collect()
 print(len(gc.get_objects()))
