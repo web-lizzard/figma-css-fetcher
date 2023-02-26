@@ -1,5 +1,8 @@
 .vscode
 root.scss
+
 .env
 
 __pycache__
+
+scss
