@@ -15,10 +15,10 @@ class Scraper:
         self.green_colors = []
         self.gray_colors = []
 
-        self.scrap_value_from_figma(fetch_data())
+        self.scrap_values_from_figma(fetch_data())
         self.create_colors_list()
 
-    def scrap_value_from_figma(self, children):
+    def scrap_values_from_figma(self, children):
 
         for child in children:
             nodes = child.get("children")
@@ -37,7 +37,7 @@ class Scraper:
                 self.set_shadows(effects)
 
             if nodes and len(nodes):
-                self.scrap_value_from_figma(nodes)
+                self.scrap_values_from_figma(nodes)
 
     def set_colors(self, colors):
         color = {hue: colors[hue] * 255 for hue in colors}

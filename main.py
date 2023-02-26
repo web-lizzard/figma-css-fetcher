@@ -5,5 +5,5 @@ import gc
 
 FileBuilder(Scraper())
 
-
+gc.collect()
 print(len(gc.get_objects()))
