@@ -9,22 +9,6 @@ class FileBuilder:
         self.colors = []
         self.create_colors()
 
-        self.blue_clr = self.create_colors_variables(
-            colors=self.scraper.blue_colors, color_name="blue"
-        )
-
-        self.green_clr = self.create_colors_variables(
-            colors=self.scraper.green_colors, color_name="green"
-        )
-
-        self.red_clr = self.create_colors_variables(
-            colors=self.scraper.red_colors, color_name="red"
-        )
-
-        self.gray_clr = self.create_colors_variables(
-            colors=self.scraper.gray_colors, color_name="gray"
-        )
-
         self.fw = [
             f"--font-weight-{w}: {w}; \n" for w in sorted(self.scraper.font_weights)
         ]
@@ -46,18 +30,6 @@ class FileBuilder:
     def build_file(self):
         with open("root.scss", mode="w") as file:
             self.write_file(file)
-
-    def create_colors_variables(self, colors: list, color_name: str):
-        return [
-            f"--clr-{color_name}-{self.set_variables_name_by_index(index)}: rgba({round(clr.get('r'))}, {round(clr.get('g'))}, {round(clr.get('b'))}, {round(clr.get('a'))}); \n"
-            for index, clr in enumerate(
-                sorted(
-                    colors,
-                    key=lambda color: sum(color.values()),
-                    reverse=True,
-                )
-            )
-        ]
 
     def set_variables_name_by_index(self, index: int):
         return (index + 1) * 100
@@ -105,9 +77,3 @@ class FileBuilder:
                 )
 
             self.colors.append(color_name + value)
-            self.colors = list(dict.fromkeys(self.colors))
-
-        #  self.colors = [
-        #     f"--clr-{color['name'].replace('_', '-').lower()}: rgba({color['color'][0]}, {color['color'][1]}, {color['color'][2]}, {color['color'][3]}  ); \n"
-        #     for color in sorted(self.scraper.colors, key=lambda color: color["name"])
-        # ]

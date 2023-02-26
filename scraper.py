@@ -234,14 +234,9 @@ class Scraper:
         self.font_weights = set()
         self.font_sizes = set()
         self.letter_spacing = set()
-        self.colors_set = []
+        self.colors_set = set()
         self.shadows = []
         self.colors = []
-
-        self.blue_colors = []
-        self.red_colors = []
-        self.green_colors = []
-        self.gray_colors = []
 
         self.scrap_values_from_figma(fetch_data())
         for color in self.colors_set:
@@ -269,9 +264,8 @@ class Scraper:
                 self.scrap_values_from_figma(nodes)
 
     def set_colors(self, colors):
-        color = {hue: colors[hue] * 255 for hue in colors}
-        if not color in self.colors_set:
-            self.colors_set.append(color)
+        color = tuple((round(colors[hue] * 255)) for hue in colors)
+        self.colors_set.add(color)
 
     def set_fonts(self, fonts):
         self.font_families.add(fonts["fontFamily"])
@@ -283,57 +277,10 @@ class Scraper:
         for effect in effects:
             pass
 
-    def append_new_color(self, color):
-        dict_without_alpha = color.copy()
-        dict_without_alpha.pop("a")
-        if all([hue == 255 for hue in dict_without_alpha]):
-            self.color_white = color
-            return
-
-        if all([hue == 0 for hue in dict_without_alpha]):
-            self.color_black = color
-            return
-
-        dominance_hue = max(dict_without_alpha, key=dict_without_alpha.get)
-        r = round(color.get("r"))
-        g = round(color.get("g"))
-        b = round(color.get("b"))
-        a = round(color.get("a"))
-
-        # color_name = convert_rgb_to_names((r, g, b))
-
+    def append_new_color(self, color: dict):
         self.colors.append(
-            {"name": convert_rgb_to_names((r, b, g)), "color": (r, g, b, a)}
+            {
+                "name": convert_rgb_to_names((color[0], color[1], color[2])),
+                "color": color,
+            }
         )
-
-        # if color_name == "lightgrey" or color_name == "grey":
-        #     self.gray_colors.append(color)
-        #     return
-
-        # if color_name == "red":
-        #     self.red_colors.append(color)
-        #     return
-
-        # if color_name == "green":
-        #     self.green_colors.append(color)
-        #     return
-
-        # if color_name == "blue":
-        #     self.blue_colors.append(color)
-        #     return
-
-        # acceptable_difference = 10
-
-        # if abs(r - b) < acceptable_difference or abs(r - g) < acceptable_difference:
-        #     self.gray_colors.append(color)
-        #     return
-
-        # if dominance_hue == "g":
-        #     self.green_colors.append(color)
-        #     return
-        # if dominance_hue == "b":
-        #     self.blue_colors.append(color)
-        #     return
-        # if dominance_hue == "r":
-        #     self.red_colors.append(color)
-        #     return
