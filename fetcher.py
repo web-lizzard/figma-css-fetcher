@@ -1,4 +1,4 @@
-from fetch_data import fetch_data
+from fetchdata import fetch_data
 from webcolors import (
     hex_to_rgb,
 )

@@ -1,6 +1,5 @@
 from io import TextIOWrapper
 from fetcher import Fetcher
-import re
 
 
 class FileBuilder:
