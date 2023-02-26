@@ -1,4 +1,7 @@
 from fetch_data import fetch_data
+from functools import reduce
+import numpy
+import math
 
 
 class Scraper:
@@ -16,7 +19,8 @@ class Scraper:
         self.gray_colors = []
 
         self.scrap_values_from_figma(fetch_data())
-        self.create_colors_list()
+        for color in self.colors_set:
+            self.append_new_color(color)
 
     def scrap_values_from_figma(self, children):
 
@@ -84,3 +88,48 @@ class Scraper:
                     self.gray_colors.append(color)
                 else:
                     self.red_colors.append(color)
+
+    def append_new_color(self, color):
+        dict_without_alpha = color.copy()
+        dict_without_alpha.pop("a")
+        if all([hue == 255 for hue in dict_without_alpha]):
+            self.color_white = color
+            return
+
+        if all([hue == 0 for hue in dict_without_alpha]):
+            self.color_black = color
+            return
+
+        dominated_hue = max(dict_without_alpha, key=dict_without_alpha.get)
+        value = 50
+
+        if dominated_hue == "g":
+            if abs(color[dominated_hue] - color.get("b")) <= 40 and abs(
+                color[dominated_hue] - color.get("r") <= 40
+                and color[dominated_hue] != 255
+            ):
+                self.gray_colors.append(color)
+                return
+
+            self.green_colors.append(color)
+            return
+        if dominated_hue == "b":
+            if abs(color[dominated_hue] - color.get("g")) <= 40 and abs(
+                color[dominated_hue] - color.get("r") <= 40
+                and color[dominated_hue] != 255
+            ):
+                self.gray_colors.append(color)
+                return
+
+            self.blue_colors.append(color)
+            return
+        if dominated_hue == "r":
+            if abs(color[dominated_hue] - color.get("g")) <= 40 and abs(
+                color[dominated_hue] - color.get("b") <= 40
+                and color[dominated_hue] != 255
+            ):
+                self.gray_colors.append(color)
+                return
+
+            self.red_colors.append(color)
+            return
