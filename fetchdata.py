@@ -20,3 +20,8 @@ def fetch_data():
         data = response.json()
         children = data["document"]["children"]
         return children
+
+
+def fetch_reset():
+    response = requests.get("https://unpkg.com/modern-css-reset/dist/reset.css")
+    return response.text
