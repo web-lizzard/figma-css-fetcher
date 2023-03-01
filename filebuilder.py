@@ -33,6 +33,7 @@ class FileBuilder:
 
     def build_root_file(self):
         with open("scss/root.scss", mode="w") as file:
+            file.write('@forward "reset";\n\n')
             self.write_file(file)
 
     def build_utilities(self):
@@ -57,6 +58,12 @@ class FileBuilder:
             file.writelines(text_colors)
             file.writelines(background_colors)
             file.writelines(font_sizes)
+
+            file.write(".grid {\n  display: grid; \n  gap: var(--space, 1rem);\n}\n\n")
+            file.write(".flex {\n  display: flex; \n  gap: var(--space, 1rem);\n}\n\n")
+            file.write(
+                ":where(.flow > * + *) {\n  margin-top: var(--space, 1rem);\n}\n\n"
+            )
 
     def set_variables_name_by_index(self, index: int):
         return (index + 1) * 100
