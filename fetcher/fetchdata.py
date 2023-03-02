@@ -4,13 +4,11 @@ import dotenv
 
 dotenv.load_dotenv()
 
-base_url = f"https://api.figma.com/v1/files/{os.environ.get('FIGMA_FILE_NAME')}/"
-
-
-headers = {"X-Figma-Token": os.environ.get("FIGMA_API_KEY")}
-
 
 def fetch_data():
+    base_url = f"https://api.figma.com/v1/files/{os.environ.get('FIGMA_FILE_NAME')}/"
+    headers = {"X-Figma-Token": os.environ.get("FIGMA_API_KEY")}
+
     try:
         response = requests.get(base_url, headers=headers)
         response.raise_for_status()

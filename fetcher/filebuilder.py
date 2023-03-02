@@ -1,7 +1,7 @@
 from io import TextIOWrapper
 import os
-from fetcher import Fetcher
-from fetchdata import fetch_reset
+from fetcher.fetcher import Fetcher
+from fetcher.fetchdata import fetch_reset
 
 
 class FileBuilder:

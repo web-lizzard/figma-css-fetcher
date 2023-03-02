@@ -1,5 +1,5 @@
-from fetcher import Fetcher
-from filebuilder import FileBuilder
+from fetcher.fetcher import Fetcher
+from fetcher.filebuilder import FileBuilder
 import gc
 
 
