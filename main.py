@@ -1,13 +1,17 @@
-from fetcher import Fetcher
-from filebuilder import FileBuilder
 import gc
 
+from fetcher import Fetcher
+from filebuilder import FileBuilder
 
-fb = FileBuilder(Fetcher())
 
-fb.create_reset_scss()
-fb.build_root_file()
-fb.build_utilities()
+def main():
+    file_builder = FileBuilder(Fetcher())
 
+    file_builder.create_reset_scss()
+    file_builder.build_root_file()
+    file_builder.build_utilities()
+
+
+main()
 gc.collect()
 print(len(gc.get_objects()))
