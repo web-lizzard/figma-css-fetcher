@@ -34,25 +34,13 @@ class Converter:
         for color in sorted(self.fetcher.colors_set, key=lambda c: c.name):
             color_name = f"--clr-{color.name.replace('_', '-').lower()}"
             value = f": rgba{color.hue}  \n"
-
-            print(value)
-
-            def check(string, color_name):
-                if color_name in string:
-                    return True
-
-                return False
-
-            color_with_same_name = list(
-                filter(lambda x: check(x, color_name=color_name), self.colors)
+            number_of_colors_with_same_name = len(
+                [color for color in self.colors if color_name in color]
             )
 
-            if len(color_with_same_name):
-                color_index = "".join(char for char in color_name if char.isdigit())
-
-                color_name = color_name.replace(
-                    str(color_index),
-                    str(int(color_index) + len(color_with_same_name) * 100),
+            if number_of_colors_with_same_name:
+                color_name = change_color_name(
+                    color_name=color_name, multiplier=number_of_colors_with_same_name
                 )
 
             self.colors.append(color_name + value)
@@ -68,3 +56,12 @@ class Converter:
 
 def set_variables_name_by_index(index: int):
     return (index + 1) * 100
+
+
+def change_color_name(color_name: str, multiplier: int):
+    color_index = "".join(char for char in color_name if char.isdigit())
+
+    return color_name.replace(
+        str(color_index),
+        str(int(color_index) + multiplier * 100),
+    )
