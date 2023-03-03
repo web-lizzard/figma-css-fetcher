@@ -4,5 +4,7 @@ root.scss
 .env
 
 __pycache__
+.pytest-cache
+
 
 scss
