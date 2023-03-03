@@ -1,12 +1,14 @@
-from io import TextIOWrapper
 import os
+from io import TextIOWrapper
+
+from fetchdata import fetch_data, fetch_reset
 from fetcher import Fetcher
-from fetchdata import fetch_reset
 
 
 class FileBuilder:
     def __init__(self, fetcher: Fetcher):
         self.fetcher = fetcher
+        self.fetcher.fetch_values_from_figma(fetch_data())
         self.colors = []
         self.create_colors()
 
@@ -93,9 +95,9 @@ class FileBuilder:
         file.write("}")
 
     def create_colors(self):
-        for color in sorted(self.fetcher.colors, key=lambda c: c["name"]):
-            color_name = f"--clr-{color['name'].replace('_', '-').lower()}"
-            value = f": rgba({color['color'][0]}, {color['color'][1]}, {color['color'][2]}, {color['color'][3]}); \n"
+        for color in sorted(self.fetcher.colors_set, key=lambda c: c.name):
+            color_name = f"--clr-{color.name.replace('_', '-').lower()}"
+            value = ": rgba".join([str(c) for c in color.hue]) + "; \n"
 
             def check(string, color_name):
                 if color_name in string:
