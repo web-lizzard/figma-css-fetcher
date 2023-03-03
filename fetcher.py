@@ -1,8 +1,8 @@
-from dataclasses import dataclass
-
 from webcolors import hex_to_rgb
 
+from abstracts.abstracts import Fetcher
 from color_palette import names_to_hex
+from models.models import Color
 
 
 def convert_rgb_to_names(rgb: tuple) -> str:
@@ -15,22 +15,15 @@ def convert_rgb_to_names(rgb: tuple) -> str:
     return differences[min(differences.keys())]
 
 
-@dataclass(frozen=True)
-class Color:
-    hue: tuple[int, int, int, int]
-    name: str
-
-
-class Fetcher:
+class FigmaFetcher(Fetcher):
     def __init__(self):
         self.font_families: set[str] = set()
         self.font_weights: set[str] = set()
         self.font_sizes: set[int] = set()
         self.letter_spacing: set[str] = set()
         self.colors_set: set[Color] = set()
-        self.shadows = []
 
-    def fetch_values_from_figma(self, children):
+    def fetch_values(self, children):
 
         for child in children:
 
@@ -50,7 +43,7 @@ class Fetcher:
             nodes = child.get("children")
 
             if nodes and len(nodes):
-                self.fetch_values_from_figma(nodes)
+                self.fetch_values(nodes)
 
     def set_colors(self, colors):
         color_tuple = tuple((round(hue * 255)) for hue in colors.values())

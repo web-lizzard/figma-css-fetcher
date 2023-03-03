@@ -1,5 +1,5 @@
+from abstracts.abstracts import Fetcher
 from fetchdata import fetch_data
-from fetcher import Fetcher
 
 
 class Converter:
@@ -46,7 +46,7 @@ class Converter:
             self.colors.append(color_name + value)
 
     def convert_values(self) -> None:
-        self.fetcher.fetch_values_from_figma(fetch_data())
+        self.fetcher.fetch_values(fetch_data())
         self.create_font_families_vars()
         self.create_font_sizes_vars()
         self.create_font_weights_vars()

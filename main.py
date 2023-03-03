@@ -1,12 +1,12 @@
 import gc
 
 from converter import Converter
-from fetcher import Fetcher
+from fetcher import FigmaFetcher
 from filebuilder import FileBuilder
 
 
 def main():
-    converter = Converter(fetcher=Fetcher())
+    converter = Converter(fetcher=FigmaFetcher())
     file_builder = FileBuilder(converter=converter)
     converter.convert_values()
     file_builder.create_reset_scss()

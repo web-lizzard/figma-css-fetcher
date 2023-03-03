@@ -2,8 +2,7 @@ import os
 from io import TextIOWrapper
 
 from converter import Converter
-from fetchdata import fetch_data, fetch_reset
-from fetcher import Fetcher
+from fetchdata import fetch_reset
 
 
 class FileBuilder:
