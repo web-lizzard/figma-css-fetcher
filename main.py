@@ -17,3 +17,7 @@ def main():
 main()
 gc.collect()
 print(len(gc.get_objects()))
+
+
+if __name__ == "__main__":
+    main()
