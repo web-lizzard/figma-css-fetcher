@@ -1,32 +1,14 @@
 import os
 from io import TextIOWrapper
 
+from converter import Converter
 from fetchdata import fetch_data, fetch_reset
 from fetcher import Fetcher
 
 
 class FileBuilder:
-    def __init__(self, fetcher: Fetcher):
-        self.fetcher = fetcher
-        self.fetcher.fetch_values_from_figma(fetch_data())
-        self.colors = []
-        self.create_colors()
-
-        self.fw = [
-            f"--font-weight-{w}: {w}; \n" for w in sorted(self.fetcher.font_weights)
-        ]
-        self.ff = [
-            f"--font-{f.replace(' ', '-').lower()}: '{f}'; \n"
-            for f in self.fetcher.font_families
-        ]
-        self.ls = [
-            f"--letter-spacing-{self.set_variables_name_by_index(index)}: {f}px; \n"
-            for index, f in enumerate(sorted(self.fetcher.letter_spacing))
-        ]
-        self.fs = [
-            f"--fs-{self.set_variables_name_by_index(index)}: {round((fs / 16), 3)}rem; \n"
-            for index, fs in enumerate(sorted(self.fetcher.font_sizes))
-        ]
+    def __init__(self, converter: Converter):
+        self.converter = converter
 
         try:
             os.mkdir("scss")
@@ -44,7 +26,7 @@ class FileBuilder:
             background_colors = []
             font_sizes = []
 
-            for color in self.colors:
+            for color in self.converter.colors:
                 text_color = self.create_colors_utilities(color, "clr", "text", "color")
                 background_color = self.create_colors_utilities(
                     color, "clr", "bg", "background-color"
@@ -52,7 +34,7 @@ class FileBuilder:
                 text_colors.append(text_color)
                 background_colors.append(background_color)
 
-            for font in self.fs:
+            for font in self.converter.fs:
                 font = self.create_colors_utilities(font, "fs", "fs", "font-size")
                 font_sizes.append(font)
 
@@ -79,45 +61,20 @@ class FileBuilder:
         file.write(":root { \n")
         file.write("// Font Weights \n")
         file.write("\n")
-        file.writelines(self.fw)
+        file.writelines(self.converter.fw)
         file.write("\n")
         file.write("// Font Families \n\n")
-        file.writelines(self.ff)
+        file.writelines(self.converter.ff)
         file.write("\n")
         file.write("// Font Sizes \n\n")
-        file.writelines(self.fs)
+        file.writelines(self.converter.fs)
         file.write("\n")
         file.write("//Colors \n")
-        file.writelines(self.colors)
+        file.writelines(self.converter.colors)
         file.write("\n")
-        file.writelines(self.ls)
+        file.writelines(self.converter.ls)
 
         file.write("}")
-
-    def create_colors(self):
-        for color in sorted(self.fetcher.colors_set, key=lambda c: c.name):
-            color_name = f"--clr-{color.name.replace('_', '-').lower()}"
-            value = ": rgba".join([str(c) for c in color.hue]) + "; \n"
-
-            def check(string, color_name):
-                if color_name in string:
-                    return True
-
-                return False
-
-            color_with_same_name = list(
-                filter(lambda x: check(x, color_name=color_name), self.colors)
-            )
-
-            if len(color_with_same_name):
-                color_index = "".join(char for char in color_name if char.isdigit())
-
-                color_name = color_name.replace(
-                    str(color_index),
-                    str(int(color_index) + len(color_with_same_name) * 100),
-                )
-
-            self.colors.append(color_name + value)
 
     def create_colors_utilities(
         self, color: str, css_prefix: str, prefix: str, property: str

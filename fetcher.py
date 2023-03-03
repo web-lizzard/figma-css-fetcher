@@ -54,7 +54,9 @@ class Fetcher:
 
     def set_colors(self, colors):
         color_tuple = tuple((round(hue * 255)) for hue in colors.values())
+
         color = Color(hue=color_tuple, name=convert_rgb_to_names(color_tuple))
+
         self.colors_set.add(color)
 
     def set_fonts(self, fonts):
